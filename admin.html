@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel - L-FEN Products</title>
+    <link rel="icon" type="image/png" href="favicon%20logo.png" />
+    <link rel="shortcut icon" type="image/png" href="favicon%20logo.png" />
+    <link rel="apple-touch-icon" href="favicon%20logo.png" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .admin-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+      }
+
+      .admin-header {
+        background: var(--bg-white);
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: var(--shadow);
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .admin-header h1 {
+        margin: 0;
+        color: var(--text-dark);
+      }
+
+      .admin-actions {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .btn-danger {
+        background-color: #ef4444;
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background-color: #dc2626;
+      }
+
+      .admin-form {
+        background: var(--bg-white);
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: var(--shadow);
+        margin-bottom: 2rem;
+        display: none;
+      }
+
+      .admin-form.active {
+        display: block;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .image-preview-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .image-preview {
+        position: relative;
+        width: 100%;
+        height: 150px;
+        border: 2px dashed var(--border-color);
+        border-radius: 0.375rem;
+        overflow: hidden;
+        background: var(--bg-light);
+      }
+
+      .image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .image-preview .remove-image {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(239, 68, 68, 0.9);
+        color: white;
+        border: none;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .image-preview .remove-image:hover {
+        background: #dc2626;
+      }
+
+      .products-list {
+        background: var(--bg-white);
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: var(--shadow);
+      }
+
+      .product-item {
+        display: grid;
+        grid-template-columns: 100px 1fr auto;
+        gap: 1.5rem;
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        align-items: center;
+      }
+
+      .product-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .product-item-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 0.375rem;
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+
+      .product-item-info h3 {
+        margin: 0 0 0.5rem 0;
+        color: var(--text-dark);
+      }
+
+      .product-item-info p {
+        margin: 0;
+        color: var(--text-light);
+        font-size: 0.875rem;
+      }
+
+      .product-item-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .admin-warning {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        color: #92400e;
+        padding: 1rem;
+        border-radius: 0.375rem;
+        margin-bottom: 2rem;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-light);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <nav>
+        <a href="/" class="logo">
+          <img src="logo.png" alt="L-FEN Logo" />
+        </a>
+        <button class="menu-toggle">☰</button>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="products">Products</a></li>
+          <li><a href="services">Services</a></li>
+          <li><a href="about">About</a></li>
+          <li><a href="warranty">Warranty</a></li>
+          <li><a href="contact">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="admin-container">
+      <div class="admin-warning">
+        <strong>Admin Panel:</strong> This page is for managing products.
+        Changes are saved locally on this computer.
+      </div>
+
+      <div class="admin-header">
+        <h1>Product Management</h1>
+        <div class="admin-actions">
+          <button class="btn" id="add-product-btn">+ Add New Product</button>
+          <a href="products" class="btn btn-secondary">View Products</a>
+        </div>
+      </div>
+
+      <!-- Add/Edit Product Form -->
+      <div class="admin-form" id="product-form">
+        <h2 id="form-title">Add New Product</h2>
+        <form id="product-form-element">
+          <input type="hidden" id="product-id" />
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="product-name">Product Name *</label>
+              <input type="text" id="product-name" required />
+            </div>
+            <div class="form-group">
+              <label for="product-category">Category *</label>
+              <select id="product-category" required>
+                <option value="">Select Category</option>
+                <option value="solar">Solar Inverters</option>
+                <option value="hybrid">Hybrid Inverters</option>
+                <option value="battery">Battery Inverters</option>
+                <option value="grid">Grid-Tie Inverters</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="product-specs">Specifications *</label>
+            <input
+              type="text"
+              id="product-specs"
+              placeholder="e.g., 5KW Capacity | Pure Sine Wave | Solar Compatible"
+              required
+            />
+          </div>
+
+          <div class="form-group full-width">
+            <label for="product-images"
+              >Product Images * (Select multiple images)</label
+            >
+            <input type="file" id="product-images" multiple accept="image/*" />
+            <small
+              style="
+                color: var(--text-light);
+                display: block;
+                margin-top: 0.5rem;
+              "
+            >
+              Select 3-5 images for best results. Images will be displayed in
+              order.
+            </small>
+            <div
+              class="image-preview-container"
+              id="image-preview-container"
+            ></div>
+          </div>
+
+          <div class="admin-actions">
+            <button type="submit" class="btn">Save Product</button>
+            <button type="button" class="btn btn-secondary" id="cancel-btn">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Products List -->
+      <div class="products-list">
+        <h2>All Products</h2>
+        <div id="products-list-container">
+          <div class="empty-state">
+            No products yet. Click "Add New Product" to get started.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="main.js"></script>
+    <script src="admin.js"></script>
+  </body>
+</html>
